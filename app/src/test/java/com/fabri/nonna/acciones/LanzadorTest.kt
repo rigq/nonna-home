@@ -50,4 +50,22 @@ class LanzadorTest {
         val planes = Lanzador { false }.planes(Accion.WhatsAppChat(""))
         assertEquals(listOf(Destino.AbrirApp(Paquetes.WHATSAPP)), planes)
     }
+
+    @Test fun abrirMensajeDeFamiliar() {
+        val planes = Lanzador { false }.planes(Accion.AbrirMensaje("k1", "612345678"))
+        assertEquals(
+            listOf(Destino.Notificacion("k1"), Destino.Ver("https://wa.me/34612345678", Paquetes.WHATSAPP), Destino.AbrirApp(Paquetes.WHATSAPP)),
+            planes
+        )
+    }
+
+    @Test fun abrirMensajeDeDesconocido() {
+        val planes = Lanzador { false }.planes(Accion.AbrirMensaje("k1", null))
+        assertEquals(listOf(Destino.Notificacion("k1"), Destino.AbrirApp(Paquetes.WHATSAPP)), planes)
+    }
+
+    @Test fun tarjetaDiaSinAtajoAbreLaApp() {
+        val l = lanzadorQueAcepta(Destino.AbrirApp(Paquetes.DIA))
+        assertEquals(Resultado.PlanB, l.ejecutar(Accion.TarjetaDiaApp))
+    }
 }

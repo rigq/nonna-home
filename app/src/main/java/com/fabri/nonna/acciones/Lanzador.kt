@@ -18,6 +18,9 @@ class Lanzador(private val abrir: (Destino) -> Boolean) {
         is Accion.WhatsAppVideo -> listOfNotNull(
             Destino.VideoWhatsApp(a.telefono).takeIf { Telefono.normalizar(a.telefono).isNotEmpty() }
         ) + chat(a.telefono) + Destino.AbrirApp(Paquetes.WHATSAPP)
+        is Accion.AbrirMensaje -> listOf(Destino.Notificacion(a.clave)) +
+            chat(a.telefonoFamiliar.orEmpty()) + Destino.AbrirApp(Paquetes.WHATSAPP)
+        Accion.TarjetaDiaApp -> listOf(Destino.Atajo(Paquetes.DIA, listOf("tarjeta", "card", "club")), Destino.AbrirApp(Paquetes.DIA))
     }
 
     private fun chat(tel: String): List<Destino> {

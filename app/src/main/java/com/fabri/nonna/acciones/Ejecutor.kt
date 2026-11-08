@@ -24,6 +24,7 @@ class Ejecutor(private val activity: Activity) {
         is Destino.AbrirApp ->
             activity.packageManager.getLaunchIntentForPackage(d.paquete)?.let { lanzar(it) } ?: false
         is Destino.Atajo -> lanzarAtajo(d)
+        is Destino.Notificacion -> com.fabri.nonna.mensajes.Mensajes.abrir(activity, d.clave)
         is Destino.VideoWhatsApp ->
             WhatsAppContactos.buscarVideollamada(activity, d.telefono)?.let { uri ->
                 lanzar(Intent(Intent.ACTION_VIEW).apply {

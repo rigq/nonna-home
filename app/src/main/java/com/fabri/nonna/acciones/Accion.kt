@@ -7,4 +7,6 @@ sealed interface Accion {
     data object AbrirWhatsApp : Accion
     data class WhatsAppChat(val telefono: String) : Accion
     data class WhatsAppVideo(val telefono: String) : Accion
+    data class AbrirMensaje(val clave: String, val telefonoFamiliar: String?) : Accion
+    data object TarjetaDiaApp : Accion
 }

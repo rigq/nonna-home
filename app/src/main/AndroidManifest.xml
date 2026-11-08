@@ -9,6 +9,7 @@
         <package android:name="com.whatsapp" />
         <package android:name="com.google.android.youtube" />
         <package android:name="com.openai.chatgpt" />
+        <package android:name="es.dia" />
         <intent>
             <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
         </intent>

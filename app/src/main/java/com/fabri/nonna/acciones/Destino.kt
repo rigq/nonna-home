@@ -8,4 +8,5 @@ sealed interface Destino {
     data class AbrirApp(val paquete: String) : Destino
     data class Atajo(val paquete: String, val palabras: List<String>) : Destino
     data class VideoWhatsApp(val telefono: String) : Destino
+    data class Notificacion(val clave: String) : Destino
 }
