@@ -1,22 +1,39 @@
 package com.fabri.nonna
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.mutableIntStateOf
+import com.fabri.nonna.acciones.Ejecutor
+import com.fabri.nonna.acciones.Lanzador
+import com.fabri.nonna.feedback.Antirrebote
+import com.fabri.nonna.feedback.Voz
+import com.fabri.nonna.feedback.vibrarCorto
+import com.fabri.nonna.navegacion.AppAbuela
+import com.fabri.nonna.navegacion.Controlador
+import com.fabri.nonna.ui.theme.TemaAbuela
 
 class MainActivity : ComponentActivity() {
+    private val irAInicio = mutableIntStateOf(0)
+    private lateinit var voz: Voz
+    private lateinit var controlador: Controlador
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        voz = Voz(this)
+        val ejecutor = Ejecutor(this)
+        controlador = Controlador(Lanzador(ejecutor::abrir), Antirrebote(), voz) { vibrarCorto(this) }
         setContent {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Hola nonna 👋", fontSize = 40.sp)
-            }
+            TemaAbuela { AppAbuela(controlador, irAInicio.intValue) }
         }
     }
+
+    /** Pulsar ○ estando ya en el launcher → volver a la pantalla de inicio. */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        irAInicio.intValue++
+    }
+
+    override fun onDestroy() { voz.cerrar(); super.onDestroy() }
 }
