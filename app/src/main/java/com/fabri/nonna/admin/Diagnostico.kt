@@ -30,6 +30,7 @@ object Diagnostico {
             Comprobacion("ChatGPT instalado", instalada(Paquetes.CHATGPT), "Instala ChatGPT e inicia sesión"),
             Comprobacion("ChatGPT abre en modo voz", modoVoz, "Actualiza ChatGPT; si no, se abrirá normal (plan B)"),
             Comprobacion("Permiso de contactos", WhatsAppContactos.tienePermiso(ctx), "Ajustes → Apps → Inicio Nonna → Permisos"),
+            Comprobacion("Permiso de llamadas", WhatsAppContactos.tienePermisoLlamar(ctx), "Ajustes → Apps → Inicio Nonna → Permisos → Teléfono → Permitir"),
             Comprobacion("Acceso a notificaciones", Mensajes.tienePermiso(ctx), "Ajustes → Acceso a notificaciones → Inicio Nonna - mensajes"),
             Comprobacion("Lector de mensajes conectado", Mensajes.conectado, "Activa Inicio automático y batería sin restricciones"),
             Comprobacion(

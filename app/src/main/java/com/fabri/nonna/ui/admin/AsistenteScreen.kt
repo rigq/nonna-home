@@ -1,6 +1,5 @@
 package com.fabri.nonna.ui.admin
 
-import android.Manifest
 import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -43,12 +42,14 @@ fun AsistenteScreen(
     var paso by rememberSaveable { mutableIntStateOf(if (yaHayPin) 1 else 0) }
     var primerPin by rememberSaveable { mutableStateOf<String?>(null) }
     var mensaje by remember { mutableStateOf<String?>(null) }
-    var contactosOk by remember { mutableStateOf(WhatsAppContactos.tienePermiso(ctx)) }
+    var contactosOk by remember { mutableStateOf(WhatsAppContactos.tienePermisos(ctx)) }
     var notifOk by remember { mutableStateOf(Mensajes.tienePermiso(ctx)) }
-    val pedirContactos = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { contactosOk = it }
+    val pedirContactos = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        contactosOk = WhatsAppContactos.tienePermisos(ctx)
+    }
     LifecycleResumeEffect(Unit) {
         notifOk = Mensajes.tienePermiso(ctx)
-        contactosOk = WhatsAppContactos.tienePermiso(ctx)
+        contactosOk = WhatsAppContactos.tienePermisos(ctx)
         onPauseOrDispose { }
     }
 
@@ -66,8 +67,8 @@ fun AsistenteScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text("Configuración inicial", fontSize = 28.sp)
-            Text("1. Contactos (para la videollamada directa) ${if (contactosOk) "✅" else ""}", fontSize = 20.sp)
-            if (!contactosOk) Button(onClick = { pedirContactos.launch(Manifest.permission.READ_CONTACTS) }) { Text("Dar permiso") }
+            Text("1. Contactos y llamadas (para la videollamada directa) ${if (contactosOk) "✅" else ""}", fontSize = 20.sp)
+            if (!contactosOk) Button(onClick = { pedirContactos.launch(WhatsAppContactos.PERMISOS) }) { Text("Dar permiso") }
             Text("2. Acceso a notificaciones (para ver los mensajes nuevos) ${if (notifOk) "✅" else ""}", fontSize = 20.sp)
             if (!notifOk) Button(onClick = {
                 ctx.startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

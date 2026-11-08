@@ -13,6 +13,14 @@ object WhatsAppContactos {
     fun tienePermiso(ctx: Context) =
         ctx.checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
 
+    /** Sin CALL_PHONE, WhatsApp rechaza el intent de videollamada (SecurityException) y se cae al chat. */
+    fun tienePermisoLlamar(ctx: Context) =
+        ctx.checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
+
+    val PERMISOS = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE)
+
+    fun tienePermisos(ctx: Context) = tienePermiso(ctx) && tienePermisoLlamar(ctx)
+
     fun buscarVideollamada(ctx: Context, telefono: String): Uri? {
         if (!tienePermiso(ctx)) return null
         val objetivo = Telefono.normalizar(telefono)

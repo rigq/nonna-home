@@ -184,10 +184,11 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
             onVolver = { pantalla = Pantalla.Admin }
         )
         Pantalla.Diagnostico -> {
-            val lista by produceState(emptyList<Comprobacion>(), ajustes, familiares, tiempo) {
+            var vuelta by remember { mutableStateOf(0) }
+            val lista by produceState(emptyList<Comprobacion>(), ajustes, familiares, tiempo, vuelta) {
                 value = withContext(Dispatchers.IO) { Diagnostico.comprobar(ctx, ajustes, familiares, tiempo) }
             }
-            DiagnosticoScreen(lista, controlador, familiares) { pantalla = Pantalla.Admin }
+            DiagnosticoScreen(lista, controlador, familiares, onPermisos = { vuelta++ }) { pantalla = Pantalla.Admin }
         }
         Pantalla.Asistente -> AsistenteScreen(
             yaHayPin = ajustes.pinHash.isNotEmpty(),
