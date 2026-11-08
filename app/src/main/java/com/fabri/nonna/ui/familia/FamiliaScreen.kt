@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.fabri.nonna.datos.Familiar
@@ -21,8 +23,7 @@ fun FamiliaScreen(
     familiares: List<Familiar>,
     nuevosDe: (Familiar) -> Int,
     cabecera: @Composable () -> Unit,
-    onVideo: (Familiar) -> Unit,
-    onMensajes: (Familiar) -> Unit,
+    onElegir: (Familiar) -> Unit,
     onAbrirWhatsApp: () -> Unit,
     onVolver: () -> Unit
 ) {
@@ -30,12 +31,15 @@ fun FamiliaScreen(
         Modifier.fillMaxSize().safeDrawingPadding().padding(Medidas.separacion),
         verticalArrangement = Arrangement.spacedBy(Medidas.separacion)
     ) {
-        LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Medidas.separacion)) {
-            item { cabecera() }
-            items(familiares, key = { it.id }) { f ->
-                TarjetaFamiliar(f, nuevosDe(f), onVideo = { onVideo(f) }, onMensajes = { onMensajes(f) })
-            }
-            item {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(Medidas.separacion),
+            horizontalArrangement = Arrangement.spacedBy(Medidas.separacion)
+        ) {
+            item(span = { GridItemSpan(maxLineSpan) }) { cabecera() }
+            items(familiares, key = { it.id }) { f -> TarjetaFamiliar(f, nuevosDe(f)) { onElegir(f) } }
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 BotonGrande("💬", "ABRIR WHATSAPP", "Ver todos los chats", Colores.whatsapp, Modifier.fillMaxWidth()) { onAbrirWhatsApp() }
             }
         }

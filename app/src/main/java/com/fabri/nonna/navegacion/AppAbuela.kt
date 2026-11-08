@@ -40,8 +40,8 @@ import com.fabri.nonna.ui.admin.EditarFamiliarScreen
 import com.fabri.nonna.ui.admin.PinScreen
 import com.fabri.nonna.ui.dia.TarjetaDiaScreen
 import com.fabri.nonna.ui.error.ErrorScreen
-import com.fabri.nonna.ui.familia.ConfirmarScreen
 import com.fabri.nonna.ui.familia.FamiliaScreen
+import com.fabri.nonna.ui.familia.OpcionesFamiliarScreen
 import com.fabri.nonna.ui.familia.SeccionMensajes
 import com.fabri.nonna.ui.home.HomeScreen
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +84,7 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
     LaunchedEffect(controlador) { controlador.errores.collect { pantalla = Pantalla.Error } }
     BackHandler(enabled = true) {
         pantalla = when (pantalla) {
-            is Pantalla.Confirmar -> Pantalla.Familia
+            is Pantalla.OpcionesFamiliar -> Pantalla.Familia
             Pantalla.AdminFamiliares, Pantalla.AjustesAdmin, Pantalla.Diagnostico -> Pantalla.Admin
             is Pantalla.EditarFamiliar -> if (ajustes.configurado) Pantalla.AdminFamiliares else Pantalla.Asistente
             else -> inicioOAsistente()
@@ -126,20 +126,19 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
                     )
                 }
             },
-            onVideo = { f -> if (controlador.permitir("¿Llamar a ${f.nombre}?")) pantalla = Pantalla.Confirmar(f) },
-            onMensajes = { f -> controlador.pulsar(Accion.WhatsAppChat(f.telefono), "Abriendo los mensajes de ${f.nombre}") },
+            onElegir = { f -> if (controlador.permitir("${f.nombre}. ¿Llamar o mensaje?")) pantalla = Pantalla.OpcionesFamiliar(f) },
             onAbrirWhatsApp = { controlador.pulsar(Accion.AbrirWhatsApp, "Abriendo WhatsApp") },
             onVolver = volver
         )
-        is Pantalla.Confirmar -> {
+        is Pantalla.OpcionesFamiliar -> {
+            // Reinicia el antirrebote: un doble toque en la tarjeta no puede pulsar LLAMAR sin querer.
             LaunchedEffect(p) { controlador.nuevaPantallaDeConfirmacion() }
-            ConfirmarScreen(
-                familiar = p.familiar,
-                onSi = {
-                    pantalla = Pantalla.Familia
-                    controlador.pulsar(Accion.WhatsAppVideo(p.familiar.telefono), "Llamando a ${p.familiar.nombre}")
-                },
-                onNo = { pantalla = Pantalla.Familia }
+            val f = p.familiar
+            OpcionesFamiliarScreen(
+                familiar = f,
+                onLlamar = { controlador.pulsar(Accion.WhatsAppVideo(f.telefono), "Llamando a ${f.nombre}") },
+                onMensaje = { controlador.pulsar(Accion.WhatsAppChat(f.telefono), "Abriendo los mensajes de ${f.nombre}") },
+                onVolver = { pantalla = Pantalla.Familia }
             )
         }
         Pantalla.TarjetaDia -> TarjetaDiaScreen(ajustes.tarjetaNumero, ajustes.tarjetaTipo, volver)

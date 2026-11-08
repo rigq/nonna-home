@@ -8,9 +8,9 @@ import androidx.compose.ui.unit.dp
 import com.fabri.nonna.ui.theme.Colores
 
 @Composable
-fun BotonVolver(onClick: () -> Unit) {
+fun BotonVolver(onClick: () -> Unit, texto: String = "VOLVER AL INICIO") {
     BotonGrande(
-        emoji = "", titulo = "◀  VOLVER AL INICIO", subtitulo = null,
+        emoji = "", titulo = "◀  $texto", subtitulo = null,
         color = Colores.volver, modifier = Modifier.fillMaxWidth().height(120.dp), onClick = onClick
     )
 }

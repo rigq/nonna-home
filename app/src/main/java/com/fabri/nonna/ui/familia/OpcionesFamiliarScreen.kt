@@ -2,9 +2,8 @@ package com.fabri.nonna.ui.familia
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Text
@@ -18,22 +17,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.fabri.nonna.datos.Familiar
 import com.fabri.nonna.ui.components.BotonGrande
+import com.fabri.nonna.ui.components.BotonVolver
 import com.fabri.nonna.ui.components.FotoFamiliar
 import com.fabri.nonna.ui.theme.Colores
 import com.fabri.nonna.ui.theme.Medidas
 
+/** Tras tocar la tarjeta de un familiar: dos opciones grandes, LLAMAR o MENSAJE. */
 @Composable
-fun ConfirmarScreen(familiar: Familiar, onSi: () -> Unit, onNo: () -> Unit) {
+fun OpcionesFamiliarScreen(familiar: Familiar, onLlamar: () -> Unit, onMensaje: () -> Unit, onVolver: () -> Unit) {
     Column(
         Modifier.fillMaxSize().safeDrawingPadding().padding(Medidas.separacion),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
+        verticalArrangement = Arrangement.spacedBy(Medidas.separacion)
     ) {
-        FotoFamiliar(familiar.nombre, familiar.rutaFoto, 160.dp)
-        Text("¿Llamar a ${familiar.nombre}?", fontSize = 40.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-        Row(horizontalArrangement = Arrangement.spacedBy(Medidas.separacion)) {
-            BotonGrande("✅", "SÍ, LLAMAR", null, Colores.si, Modifier.weight(1f).height(160.dp), contentColor = Color.White, onClick = onSi)
-            BotonGrande("✖️", "NO", null, Colores.no, Modifier.weight(1f).height(160.dp), contentColor = Color.White, onClick = onNo)
-        }
+        FotoFamiliar(familiar.nombre, familiar.rutaFoto, 180.dp)
+        Text(familiar.nombre, fontSize = 40.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        BotonGrande("📹", "LLAMAR", null, Colores.si, Modifier.fillMaxWidth().weight(1f), contentColor = Color.White, onClick = onLlamar)
+        BotonGrande("💬", "MENSAJE", null, Color(0xFF1565C0), Modifier.fillMaxWidth().weight(1f), contentColor = Color.White, onClick = onMensaje)
+        BotonVolver(onVolver, texto = "VOLVER A FAMILIA")
     }
 }
