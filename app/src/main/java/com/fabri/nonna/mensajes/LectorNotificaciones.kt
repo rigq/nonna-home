@@ -19,6 +19,8 @@ class LectorNotificaciones : NotificationListenerService() {
     override fun onListenerDisconnected() { Mensajes.conectado = false }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        // Llamadas entrantes de cualquier app (WhatsApp o teléfono): abrir a pantalla completa.
+        runCatching { LlamadaEntrante.alPublicar(sbn) }
         if (sbn.packageName != Paquetes.WHATSAPP) return
         val cruda = runCatching { aCruda(sbn) }.getOrNull() ?: return
         if (BuildConfig.DEBUG) Log.i("SONDA_NOTIF", cruda.toString())
@@ -27,6 +29,7 @@ class LectorNotificaciones : NotificationListenerService() {
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
+        LlamadaEntrante.alQuitar(sbn)
         if (sbn.packageName != Paquetes.WHATSAPP) return
         Mensajes.bandeja.quitar(sbn.key); Mensajes.accesos.remove(sbn.key)
     }

@@ -41,6 +41,12 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         com.fabri.nonna.mensajes.Mensajes.reconectar(this)
+        com.fabri.nonna.mensajes.LlamadaEntrante.appEnPantalla = true
+    }
+
+    override fun onPause() {
+        com.fabri.nonna.mensajes.LlamadaEntrante.appEnPantalla = false
+        super.onPause()
     }
 
     override fun onDestroy(){ voz.cerrar(); super.onDestroy() }
