@@ -38,5 +38,10 @@ class MainActivity : ComponentActivity() {
         irAInicio.intValue++
     }
 
-    override fun onDestroy() { voz.cerrar(); super.onDestroy() }
+    override fun onResume() {
+        super.onResume()
+        com.fabri.nonna.mensajes.Mensajes.reconectar(this)
+    }
+
+    override fun onDestroy(){ voz.cerrar(); super.onDestroy() }
 }
