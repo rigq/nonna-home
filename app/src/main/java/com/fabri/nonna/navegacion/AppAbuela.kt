@@ -20,6 +20,8 @@ import com.fabri.nonna.acciones.Accion
 import com.fabri.nonna.acciones.WhatsAppContactos
 import com.fabri.nonna.datos.Ajustes
 import com.fabri.nonna.datos.Repositorio
+import com.fabri.nonna.datos.TipoTarjeta
+import com.fabri.nonna.ui.dia.TarjetaDiaScreen
 import com.fabri.nonna.mensajes.Asociacion
 import com.fabri.nonna.mensajes.MensajeNuevo
 import com.fabri.nonna.mensajes.Mensajes
@@ -61,7 +63,13 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
         Pantalla.Inicio -> HomeScreen(
             controlador = controlador, temperatura = null, onToqueReloj = {},
             onFamilia = { pantalla = Pantalla.Familia },
-            onDia = { if (controlador.permitir("Tarjeta del Día")) pantalla = Pantalla.TarjetaDia }
+            onDia = {
+                when {
+                    ajustes.tarjetaTipo == TipoTarjeta.APP -> controlador.pulsar(Accion.TarjetaDiaApp, "Abriendo la tarjeta del Día")
+                    ajustes.tarjetaNumero.isBlank() -> controlador.mostrarError()
+                    else -> if (controlador.permitir("Tarjeta del Día")) pantalla = Pantalla.TarjetaDia
+                }
+            }
         )
         Pantalla.Error -> ErrorScreen(ajustes.nombreAyuda, volver)
         Pantalla.Familia -> FamiliaScreen(
@@ -92,9 +100,6 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
                 onNo = { pantalla = Pantalla.Familia }
             )
         }
-        Pantalla.TarjetaDia -> Column(Modifier.fillMaxSize().safeDrawingPadding()) {
-            Text("En construcción", fontSize = 32.sp, modifier = Modifier.weight(1f))
-            BotonVolver(volver)
-        }
+        Pantalla.TarjetaDia -> TarjetaDiaScreen(ajustes.tarjetaNumero, ajustes.tarjetaTipo, volver)
     }
 }
