@@ -7,10 +7,14 @@ import android.content.pm.LauncherApps
 import android.net.Uri
 import android.os.Process
 import android.provider.MediaStore
+import android.util.Log
+import com.fabri.nonna.BuildConfig
 
 class Ejecutor(private val activity: Activity) {
 
-    fun abrir(d: Destino): Boolean = when (d) {
+    fun abrir(d: Destino): Boolean = intentar(d).also { if (BuildConfig.DEBUG) Log.i(TAG, "$d -> $it") }
+
+    private fun intentar(d: Destino): Boolean = when (d) {
         is Destino.Ver -> lanzar(Intent(Intent.ACTION_VIEW).apply {
             if (d.mime != null) setDataAndType(Uri.parse(d.uri), d.mime) else data = Uri.parse(d.uri)
             d.paquete?.let { setPackage(it) }
@@ -38,7 +42,11 @@ class Ejecutor(private val activity: Activity) {
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         activity.startActivity(i)
         true
-    } catch (e: ActivityNotFoundException) { false } catch (e: SecurityException) { false }
+    } catch (e: ActivityNotFoundException) { fallo(e) } catch (e: SecurityException) { fallo(e) }
+
+    private fun fallo(e: Exception): Boolean { if (BuildConfig.DEBUG) Log.w(TAG, "fallo al abrir", e); return false }
+
+    private companion object { const val TAG = "NONNA_ACCION" }
 
     private fun lanzarAtajo(d: Destino.Atajo): Boolean {
         val la = activity.getSystemService(LauncherApps::class.java) ?: return false

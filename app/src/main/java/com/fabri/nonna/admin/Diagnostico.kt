@@ -2,8 +2,8 @@ package com.fabri.nonna.admin
 
 import android.app.role.RoleManager
 import android.content.Context
-import android.content.pm.LauncherApps
-import android.os.Process
+import android.content.Intent
+import android.net.Uri
 import com.fabri.nonna.acciones.Lanzador
 import com.fabri.nonna.acciones.Paquetes
 import com.fabri.nonna.acciones.WhatsAppContactos
@@ -20,23 +20,15 @@ object Diagnostico {
         val pm = ctx.packageManager
         fun instalada(p: String) = pm.getLaunchIntentForPackage(p) != null
         val esInicio = ctx.getSystemService(RoleManager::class.java)?.isRoleHeld(RoleManager.ROLE_HOME) == true
-        val atajoVoz = runCatching {
-            val la = ctx.getSystemService(LauncherApps::class.java)
-            val q = LauncherApps.ShortcutQuery().setPackage(Paquetes.CHATGPT).setQueryFlags(
-                LauncherApps.ShortcutQuery.FLAG_MATCH_DYNAMIC or LauncherApps.ShortcutQuery.FLAG_MATCH_MANIFEST or
-                    LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED
-            )
-            la.getShortcuts(q, Process.myUserHandle()).orEmpty().any { s ->
-                val t = "${s.id} ${s.shortLabel} ${s.longLabel}".lowercase(); Lanzador.PALABRAS_VOZ.any { it in t }
-            }
-        }.getOrDefault(false)
+        val modoVoz = Intent(Intent.ACTION_VIEW, Uri.parse(Lanzador.URL_VOZ_CHATGPT))
+            .setPackage(Paquetes.CHATGPT).resolveActivity(pm) != null
 
         val lista = mutableListOf(
             Comprobacion("Pantalla de inicio predeterminada", esInicio, "Ajustes → Apps → Apps predeterminadas → Pantalla de inicio"),
             Comprobacion("WhatsApp instalado", instalada(Paquetes.WHATSAPP), "Instala WhatsApp"),
             Comprobacion("YouTube instalado", instalada(Paquetes.YOUTUBE), "Instala YouTube"),
             Comprobacion("ChatGPT instalado", instalada(Paquetes.CHATGPT), "Instala ChatGPT e inicia sesión"),
-            Comprobacion("Atajo de voz de ChatGPT", atajoVoz, "Se abrirá ChatGPT normal (plan B)"),
+            Comprobacion("ChatGPT abre en modo voz", modoVoz, "Actualiza ChatGPT; si no, se abrirá normal (plan B)"),
             Comprobacion("Permiso de contactos", WhatsAppContactos.tienePermiso(ctx), "Ajustes → Apps → Inicio Nonna → Permisos"),
             Comprobacion("Acceso a notificaciones", Mensajes.tienePermiso(ctx), "Ajustes → Acceso a notificaciones → Inicio Nonna - mensajes"),
             Comprobacion("Lector de mensajes conectado", Mensajes.conectado, "Activa Inicio automático y batería sin restricciones"),

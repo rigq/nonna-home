@@ -39,7 +39,7 @@ fun TarjetaFamiliar(f: Familiar, nuevos: Int, onVideo: () -> Unit, onMensajes: (
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                BotonGrande("📹", "VIDEOLLAMADA", null, Colores.si, Modifier.weight(1f), contentColor = Color.White, onClick = onVideo)
+                BotonGrande("📹", "LLAMAR", null, Colores.si, Modifier.weight(1f), contentColor = Color.White, onClick = onVideo)
                 BotonGrande("🎤", "MENSAJES", null, Color(0xFF1565C0), Modifier.weight(1f), contentColor = Color.White, onClick = onMensajes)
             }
         }

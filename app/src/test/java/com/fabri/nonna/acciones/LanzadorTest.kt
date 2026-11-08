@@ -23,10 +23,16 @@ class LanzadorTest {
         assertEquals(Resultado.Error, l.ejecutar(Accion.YouTube))
     }
 
-    @Test fun chatGptSinAtajoAbreLaApp() {
+    @Test fun chatGptAbreDirectoElModoVoz() {
+        val planes = Lanzador { false }.planes(Accion.ChatGptVoz)
+        assertEquals(Destino.Ver(Lanzador.URL_VOZ_CHATGPT, Paquetes.CHATGPT), planes[0])
+        assertEquals(Destino.Atajo(Paquetes.CHATGPT, Lanzador.PALABRAS_VOZ), planes[1])
+        assertEquals(Destino.AbrirApp(Paquetes.CHATGPT), planes.last())
+    }
+
+    @Test fun chatGptSinModoVozAbreLaApp() {
         val l = lanzadorQueAcepta(Destino.AbrirApp(Paquetes.CHATGPT))
         assertEquals(Resultado.PlanB, l.ejecutar(Accion.ChatGptVoz))
-        assertEquals(Destino.Atajo(Paquetes.CHATGPT, Lanzador.PALABRAS_VOZ), intentados.first())
     }
 
     @Test fun chatDeWhatsAppUsaWaMe() {
