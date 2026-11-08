@@ -7,3 +7,11 @@
 - (d) paquete DIA: es.dia
 - R3 tarjeta DIA: PENDIENTE (prueba manual de escanear el código dos veces)
 - R5 notificaciones: PENDIENTE (tarea 12)
+
+## Hallazgos en la prueba real (2026-11-08)
+
+- **Videollamada directa:** WhatsApp (`CallContactLandingActivity`) exige `CALL_PHONE` al que lanza el intent
+  de la fila `vnd.com.whatsapp.video.call`. Sin él: `SecurityException` y caída al chat. Con el permiso, llama
+  directamente. ✅ Confirmado en el Redmi.
+- **ChatGPT en voz:** el atajo de `LauncherApps` solo funciona siendo pantalla de inicio. El enlace
+  `https://chatgpt.com/voice` (paquete `com.openai.chatgpt`) abre el modo voz siempre. ✅ Confirmado.
