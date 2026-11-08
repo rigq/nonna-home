@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableIntStateOf
 import com.fabri.nonna.acciones.Ejecutor
 import com.fabri.nonna.acciones.Lanzador
+import com.fabri.nonna.datos.Repositorio
 import com.fabri.nonna.feedback.Antirrebote
 import com.fabri.nonna.feedback.Voz
 import com.fabri.nonna.feedback.vibrarCorto
@@ -18,14 +19,16 @@ class MainActivity : ComponentActivity() {
     private val irAInicio = mutableIntStateOf(0)
     private lateinit var voz: Voz
     private lateinit var controlador: Controlador
+    private lateinit var repo: Repositorio
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         voz = Voz(this)
+        repo = Repositorio(this)
         val ejecutor = Ejecutor(this)
         controlador = Controlador(Lanzador(ejecutor::abrir), Antirrebote(), voz) { vibrarCorto(this) }
         setContent {
-            TemaAbuela { AppAbuela(controlador, irAInicio.intValue) }
+            TemaAbuela { AppAbuela(controlador, irAInicio.intValue, repo) }
         }
     }
 
