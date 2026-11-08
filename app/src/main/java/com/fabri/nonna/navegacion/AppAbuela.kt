@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +27,10 @@ import com.fabri.nonna.mensajes.Asociacion
 import com.fabri.nonna.mensajes.MensajeNuevo
 import com.fabri.nonna.mensajes.Mensajes
 import com.fabri.nonna.ui.familia.SeccionMensajes
+import com.fabri.nonna.tiempo.OpenMeteo
+import com.fabri.nonna.tiempo.ServicioTiempo
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import com.fabri.nonna.ui.components.BotonVolver
 import com.fabri.nonna.ui.error.ErrorScreen
@@ -40,6 +44,10 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
     val familiares by repo.familiares.collectAsState(initial = emptyList())
     val ajustes by repo.ajustes.collectAsState(initial = Ajustes())
     val mensajes by Mensajes.bandeja.lista.collectAsState()
+    val tiempo by repo.tiempo.collectAsState(initial = null)
+    val tiempoActual by rememberUpdatedState(tiempo)
+    val ajustesActuales by rememberUpdatedState(ajustes)
+    val servicioTiempo = remember(repo) { ServicioTiempo(repo) }
     val ctx = LocalContext.current
     val nombresAgenda by produceState(emptyMap<String, String>(), familiares) {
         value = withContext(Dispatchers.IO) {
@@ -60,8 +68,17 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
     }
 
     when (val p = pantalla) {
-        Pantalla.Inicio -> HomeScreen(
-            controlador = controlador, temperatura = null, onToqueReloj = {},
+        Pantalla.Inicio -> {
+            LaunchedEffect(ajustes.lat, ajustes.lon) {
+                while (true) {
+                    servicioTiempo.refrescarSiToca(ajustesActuales, tiempoActual)
+                    delay(60_000)
+                }
+            }
+            HomeScreen(
+            controlador = controlador,
+            temperatura = tiempo?.let { OpenMeteo.texto(it) },
+            onToqueReloj = {},
             onFamilia = { pantalla = Pantalla.Familia },
             onDia = {
                 when {
@@ -70,7 +87,8 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
                     else -> if (controlador.permitir("Tarjeta del Día")) pantalla = Pantalla.TarjetaDia
                 }
             }
-        )
+            )
+        }
         Pantalla.Error -> ErrorScreen(ajustes.nombreAyuda, volver)
         Pantalla.Familia -> FamiliaScreen(
             familiares = familiares,
