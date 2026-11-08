@@ -175,7 +175,13 @@ fun AppAbuela(controlador: Controlador, irAInicio: Int, repo: Repositorio) {
                     alMenuFamiliares()
                 }
             },
-            onCancelar = alMenuFamiliares
+            onCancelar = alMenuFamiliares,
+            onEliminar = p.familiar?.let { f ->
+                {
+                    scope.launch { repo.guardarFamiliares(familiares.filter { it.id != f.id }); alMenuFamiliares() }
+                    Unit
+                }
+            }
         )
         Pantalla.AjustesAdmin -> AjustesAdminScreen(
             ajustes,
