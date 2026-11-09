@@ -1,6 +1,6 @@
 # Inicio Nonna — a simple Android home screen for my grandmother
 
-An Android launcher built in Kotlin + Jetpack Compose that replaces the home screen of my ~80-year-old
+An Android launcher built in Kotlin + Jetpack Compose that replaces the home screen of my 80-year-old
 grandmother's phone with five big, colour-coded buttons. It was designed around her real difficulties —
 accidental taps and getting lost inside apps — and tested with her every day on her Xiaomi Redmi.
 
