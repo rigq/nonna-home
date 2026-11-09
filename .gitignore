@@ -15,3 +15,6 @@
 local.properties
 
 .superpowers/
+
+# Datos personales de la Nonna (solo en local)
+docs/chatgpt-nonna.md
